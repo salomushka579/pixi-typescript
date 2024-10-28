@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import Pin from './components/pin';
 import Slot from "./components/slot";
-import Game from "./components/game.ts";
+import Game from "./components/game";
 import {roundFloat} from "./utils/helpers";
 
 // Define types for better clarity and control

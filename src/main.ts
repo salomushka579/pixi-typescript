@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import Pin from './components/pin';
 import Slot from "./components/slot";
 import Game from "./components/game.ts";
-import { roundFloat } from "./utils/helpers";
+import {roundFloat} from "./utils/helpers";
 
 // Define types for better clarity and control
 type SlotCosts = {
@@ -116,118 +116,121 @@ window.onload = function (): void {
     // Set up the initial configuration
     setup(initial_level, initial_color);
     document.getElementById("canvas")?.appendChild(app.view as HTMLCanvasElement);
+    type Color = 'green' | 'yellow' | 'red';
 
-    // Event listeners for slot level selection
-    const canvas_option_divs: NodeListOf<Element> = document.querySelectorAll(".canvas-option_div");
-    canvas_option_divs.forEach(op => {
+    const canvasOptionDivs: NodeListOf<Element> = document.querySelectorAll(".canvas-option_div");
+    const canvasOptionColors: NodeListOf<Element> = document.querySelectorAll(".slot-cost-span-big");
+    const playButton = document.getElementById("play-button");
+    const pinDisplay = document.getElementById("pin");
+
+    //set up the app with selected level and color
+    function setupApp(level: number, color: Color): void {
+        destroyApp();
+        setup(level, color);
+        playButton?.setAttribute('data-attribute-color', color);
+        playButton?.setAttribute('data-attribute-pin', level.toString());
+    }
+
+    // Handle level selection
+    canvasOptionDivs.forEach((op) => {
         op.addEventListener("click", (e: Event) => {
             const target = e.target as HTMLElement;
-            const new_level = parseInt(target.innerHTML);
-            destroyApp();
-            const getColor: string | null | undefined = document.getElementById("play-button")?.getAttribute('data-attribute-color');
-            if (getColor && ['green', 'yellow', 'red'].includes(getColor)) setup(new_level, getColor as Color);
+            const newLevel = parseInt(target.innerHTML);
+            const color = playButton?.getAttribute('data-attribute-color') as Color | null;
 
-            canvas_option_divs.forEach(line_number => {
-                line_number.classList.remove("selected-line");
-                if (new_level.toString() === line_number.innerHTML) {
-                    line_number.classList.add("selected-line");
-                    document.getElementById("pin")!.innerHTML = "Pins: " + line_number.innerHTML;
-                    document.getElementById("play-button")?.setAttribute('data-attribute-pin', new_level.toString());
-                }
-            })
+            if (color && ['green', 'yellow', 'red'].includes(color)) {
+                setupApp(newLevel, color as Color);
+            }
+
+            // Update selected level
+            canvasOptionDivs.forEach((lineNumber) => {
+                lineNumber.classList.toggle("selected-line", lineNumber.innerHTML === newLevel.toString());
+            });
+
+            if (pinDisplay) {
+                pinDisplay.innerHTML = `Pins: ${newLevel}`;
+            }
         });
     });
-    let canvas_option_color = document.querySelectorAll(".slot-cost-span-big")
-    canvas_option_color.forEach((colorOp) => {
-        colorOp.addEventListener("click", function (e) {
-            const target: HTMLElement = e.target as HTMLElement;
-            let new_color: string = target.innerHTML;
-            destroyApp();
-            let getLevel: string | null | undefined = document.getElementById("play-button")?.getAttribute('data-attribute-pin');
-            if (new_color && ['green', 'yellow', 'red'].includes(new_color)) setup(Number(getLevel), new_color as Color);
 
-            canvas_option_color.forEach(line_color => {
-                line_color.classList.remove("selected-color")
-                if (new_color === line_color.innerHTML) {
-                    line_color.classList.add("selected-color");
-                    document.getElementById("play-button")?.setAttribute('data-attribute-color', new_color);
-                }
-            })
+    // Handle color selection
+    canvasOptionColors.forEach((colorOption) => {
+        colorOption.addEventListener("click", (e: Event) => {
+            const target = e.target as HTMLElement;
+            const newColor = target.innerHTML as Color;
+            const level = parseInt(playButton?.getAttribute('data-attribute-pin') || '0');
+
+            if (['green', 'yellow', 'red'].includes(newColor)) {
+                setupApp(level, newColor);
+            }
+
+            // Update selected color
+            canvasOptionColors.forEach((colorElement) => {
+                colorElement.classList.toggle("selected-color", colorElement.innerHTML === newColor);
+            });
         });
     });
+
     document.getElementById("pin")?.addEventListener("click", () => {
         document.getElementById("pin-options")?.classList.toggle('pin-options')
 
-    })
+    });
+
     document.getElementById("slot-cost-change-button")?.addEventListener("click", () => {
         document.getElementById("slot-cost")?.classList.toggle('slot-cost-options')
 
-    })
-    let sumSection : HTMLElement | null = document.getElementById("sum-section-amount");
-    if(sumSection){
+    });
+
+    // Define bet points display and buttons
+    const pointsAmount = document.getElementById("bet-tools-points-amount");
+    const increaseButton = document.getElementById("bet-tools-points-increase");
+    const decreaseButton = document.getElementById("bet-tools-points-decrease");
+
+    // update points and data attributes
+    function updateBetPoints(direction: 'increase' | 'decrease'): void {
+        const button = direction === 'increase' ? increaseButton : decreaseButton;
+        const currentIndex = parseInt(button?.getAttribute('data-attribute') || '0');
+        const newIndex = direction === 'increase' ? currentIndex + 1 : currentIndex - 1;
+
+        if (newIndex >= 0 && newIndex < bet_array.length) {
+            const newBet = bet_array[newIndex];
+            if (direction === 'increase' && points <= newBet) return;  // Check for sufficient points only when increasing
+
+            // Update bet and UI
+            bet = newBet;
+            pointsAmount!.innerHTML = `${bet}`;
+
+            // Update data attributes for both buttons
+            increaseButton?.setAttribute('data-attribute', newIndex.toString());
+            decreaseButton?.setAttribute('data-attribute', newIndex.toString());
+        }
+    }
+
+    // Attach event listeners to buttons
+    increaseButton?.addEventListener("click", () => updateBetPoints('increase'));
+    decreaseButton?.addEventListener("click", () => updateBetPoints('decrease'));
+
+    // Initial points setup
+    const sumSection: HTMLElement | null = document.getElementById("sum-section-amount");
+    if (sumSection) {
         sumSection.innerHTML = String(points);
     }
 
-    // Increase button event listener
-    document.getElementById("bet-tools-points-increase")?.addEventListener("click", () => {
-        let attributeIncrease: string | number | null;
-        let toolsPointIncrease: HTMLElement | null = document.getElementById("bet-tools-points-increase");
-        let toolsPointIncreaseAttribute: string | null | undefined = toolsPointIncrease?.getAttribute('data-attribute');
-        if(toolsPointIncrease && toolsPointIncreaseAttribute) {
-            attributeIncrease = parseInt(toolsPointIncreaseAttribute);
-
-            if (attributeIncrease + 1 !== bet_array.length) {
-                let checkBet = bet_array[attributeIncrease + 1];
-                if (points > checkBet) {
-                    bet = checkBet;
-                    let pointsAmount : HTMLElement | null = document.getElementById("bet-tools-points-amount");
-                    if(pointsAmount) {
-                        pointsAmount.innerHTML = `${bet}`;
-                    }
-
-                    // Update data-attribute for increase
-                    attributeIncrease = (attributeIncrease + 1).toString();
-                    document.getElementById("bet-tools-points-increase")?.setAttribute('data-attribute', attributeIncrease);
-                    document.getElementById("bet-tools-points-decrease")?.setAttribute('data-attribute', attributeIncrease);
-                }
-            }
-        }
-    });
-
-// Decrease button event listener
-    document.getElementById("bet-tools-points-decrease")?.addEventListener("click", () => {
-        let attributeDecrease: string | number | null;
-        let toolsPointDecrease: HTMLElement | null = document.getElementById("bet-tools-points-decrease");
-        let toolsPointDecreaseAttribute: string | null | undefined = toolsPointDecrease?.getAttribute('data-attribute');
-        if(toolsPointDecrease && toolsPointDecreaseAttribute) {
-            attributeDecrease = parseInt(toolsPointDecreaseAttribute);
-            if (attributeDecrease > 0) {
-                bet = bet_array[attributeDecrease - 1];
-                let pointsAmount: HTMLElement | null = document.getElementById("bet-tools-points-amount");
-                if (pointsAmount) {
-                    pointsAmount.innerHTML = `${bet}`;
-                }
-
-                // Update data-attribute for decrease
-                attributeDecrease = (attributeDecrease - 1).toString();
-                document.getElementById("bet-tools-points-increase")?.setAttribute('data-attribute', attributeDecrease);
-                document.getElementById("bet-tools-points-decrease")?.setAttribute('data-attribute', attributeDecrease);
-            }
-        }
-    });
-
-
+    // Event listener for the play button
     document.getElementById("play-button")?.addEventListener("click", () => {
         if (points > 0 && bet <= points) {
             points -= bet;
             points = roundFloat(points);
-            let sumSection : HTMLElement | null = document.getElementById("sum-section-amount");
-            if(sumSection){
+
+            // Update the displayed points
+            if (sumSection) {
                 sumSection.innerHTML = String(points);
             }
-            let currentColor: any = document.getElementById("play-button")?.getAttribute('data-attribute-color');
-            new Game(beginning, app, fraction, pins, slots, bet, top_bounce, side_bounce, currentColor, points).start()
+
+            // Retrieve color attribute and start the game
+            const currentColor = document.getElementById("play-button")?.getAttribute('data-attribute-color') as Color | null;
+            new Game(beginning, app, fraction, pins, slots, bet, top_bounce, side_bounce, currentColor, points).start();
         }
-    })
+    });
 
 };

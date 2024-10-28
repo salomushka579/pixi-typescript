@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import { roundFloat } from "../utils/helpers";
+import {Application} from "pixi.js";
 
 // Extend PIXI.Sprite to include additional properties
 interface FallingBallSprite extends PIXI.Sprite {
@@ -26,15 +27,15 @@ class Game {
     points: number;
 
     constructor(
-        beginning: { x: number, y: number },
-        app: PIXI.Application,
+        beginning: { x: number; y: number },
+        app: Application,
         fraction: number,
-        pins: { x: number, y: number, radius: number }[],
-        slots: { x: number, y: number, width: number, cost: number, slot: { y: number } }[],
+        pins: { x: number; y: number; radius: number }[],
+        slots: { x: number; y: number; width: number; cost: number; slot: { y: number } }[],
         bet: number,
         top_bounce: number,
         side_bounce: number,
-        colorCurrent: string,
+        colorCurrent: "green" | "yellow" | "red" | null,
         points: number
     ) {
         this.beginning = beginning;

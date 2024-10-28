@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plinko</title>
+  <script type="module" crossorigin src="/assets/index-i7CYYGJT.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Bii8Auhy.css">
+</head>
+
+<body>
+<div class="plinko-app">
+  <header>
+    <div class="header-section">
+      <span>Plinko</span>
+      <div>
+        <span class="slot-cost-span slot-cost-span-big slot-cost-span-green selected-color">green</span>
+        <span class="slot-cost-span slot-cost-span-big slot-cost-span-yellow selected-color">yellow</span>
+        <span class="slot-cost-span slot-cost-span-big slot-cost-span-red selected-color">red</span>
+      </div>
+      <div class="sum-section">
+        <span id="sum-section-amount"></span>
+        <span class="sum-section-currency"> USD</span>
+      </div>
+    </div>
+    <div class="navigation">
+      <div class="pin-section">
+        <div id="pin">Pins: 14</div>
+        <div id="pin-options">
+          <div class="canvas-option_div">12</div>
+          <div class="canvas-option_div selected-line">14</div>
+          <div class="canvas-option_div">16</div>
+        </div>
+      </div>
+      <div class="slot-cost" id="slot-cost">
+        <div id="slot-cost-add">
+
+        </div>
+        <div id="slot-cost-change-button">
+          &#10148;
+        </div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="game-board">
+      <div id="canvas">
+
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="bet-tools">
+      <div class="bet-tools-nav">
+        <div class="bet-tools-points">
+          <span class="note">Bet USD: </span>
+          <span id="bet-tools-points-amount">0.30</span>
+        </div>
+        <div class="bet-tools-points-adjustment">
+          <div data-attribute="2" id="bet-tools-points-decrease"
+               class="bet-tools-points-decrease">
+            -
+          </div>
+          <div data-attribute="2" id="bet-tools-points-increase"
+               class="bet-tools-points-increase">
+            +
+          </div>
+        </div>
+      </div>
+      <div id="play-button" class="play-button" data-attribute-color="green" data-attribute-pin="14">
+        <label>spin</label>
+      </div>
+    </div>
+  </footer>
+</div>
+</body>
+
+</html>

@@ -3,6 +3,7 @@ import Pin from './components/pin';
 import Slot from "./components/slot";
 import Game from "./components/game";
 import {roundFloat} from "./utils/helpers";
+import './style.css';
 
 // Define types for better clarity and control
 type SlotCosts = {

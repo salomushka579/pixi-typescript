@@ -1,6 +1,7 @@
 {
   "name": "pixi-plinko-typescript",
-  "private": true,
+  "private": false,
+  "homepage": "https://salomushka579.github.io/pixi-typescript/",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
